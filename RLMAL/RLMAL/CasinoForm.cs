@@ -188,6 +188,13 @@ namespace RLMAL
             updateActionReward();
             //Updates the actions plot
             updatePlotActions();
+
+            // TODO: IMPLEMENT
+            // Store the values in a .csv file to be used in statistical analysis
+            // outputValues();
+
+
+
             //All slot machine queue counts are set to 0
             resetQueues();
 
@@ -240,6 +247,7 @@ namespace RLMAL
 
             //Update queue for slot machine
             slotmachineList[machineIndex].getQueueCount++;
+            
             int queue = slotmachineList[machineIndex].getQueueCount;
 
             //Reward drawn from machine by agent
