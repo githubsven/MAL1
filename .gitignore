@@ -1,3 +1,4 @@
 *.pdb
 .RLMAL\RLMAL\bin\*
 .RLMAL\RLMAL\obj\*
+*.exe
