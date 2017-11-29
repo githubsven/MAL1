@@ -45,10 +45,10 @@ namespace RLMAL
                     bestSlotIndex = i;
                     bestReward = agent.getRewards[i];
                 }
+                // Add a random chance to select a machine of equal value
                 else if (agent.getRewards[i] == bestReward && random.NextDouble() > 0.5)
                     bestSlotIndex = i;
             }
-            // agent.getRewards[agent.getMachineId] = updateScore(agent, 0.5, 0);
 
             return bestSlotIndex;
         }
@@ -81,13 +81,17 @@ namespace RLMAL
         {
             // Calculate the total reward (denominator of the Gibbs distribution)
             double totalRewards = 0;
+            double[] p = new double[agent.getNrSlots];  // Chances per action
+
             for (int i = 0; i < agent.getNrSlots; i++)
-                totalRewards += Math.Pow(Math.E, agent.getRewards[i] / tau);
+            {
+                p[i] = Math.Pow(Math.E, agent.getRewards[i] / tau);
+                totalRewards += p[i];
+            }
 
             // Calculate the chances per action to be chosen
-            double[] p = new double[agent.getNrSlots];
             for (int i = 0; i < agent.getNrSlots; i++)
-                p[i] = Math.Pow(Math.E, agent.getRewards[i] / tau) / totalRewards;
+                p[i] /= totalRewards;
 
             // Get a random value from [0,1]
             double x = random.NextDouble();

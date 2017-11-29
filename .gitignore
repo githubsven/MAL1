@@ -2,3 +2,5 @@
 .RLMAL\RLMAL\bin\*
 .RLMAL\RLMAL\obj\*
 *.exe
+RLMAL/.vs/RLMAL/v15/Server/sqlite3/storage.ide
+*.ide-shm
