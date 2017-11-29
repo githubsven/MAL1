@@ -22,7 +22,7 @@ namespace RLMAL
         /// reward_t    : the reward the agent received at tick t from the chosen slot machine
         public static double updateScore(Agent agent, double alpha, double reward_t)
         {
-            return 0;
+            return agent.getRewards[agent.getMachineId] * (1 - alpha) + reward_t * alpha;
         }
 
         /// TO DO: EXERCISE 2
@@ -33,7 +33,24 @@ namespace RLMAL
         /// random      : this object can be used to generate random numbers
         public static int optimistic(Agent agent, Random random)
         {
-            return 0;
+            //Update the reward for the corresponding slot machine used in the previous round.
+
+            //Find and return the best possible action based on the average rewards recieved per slot machine.
+            int bestSlotIndex = 0;
+            double bestReward = agent.getRewards[0];
+            for (int i = 1; i < agent.getNrSlots; i++)
+            {
+                if (agent.getRewards[i] > bestReward)
+                {
+                    bestSlotIndex = i;
+                    bestReward = agent.getRewards[i];
+                }
+                else if (agent.getRewards[i] == bestReward && random.NextDouble() > 0.5)
+                    bestSlotIndex = i;
+            }
+            // agent.getRewards[agent.getMachineId] = updateScore(agent, 0.5, 0);
+
+            return bestSlotIndex;
         }
 
         /// TO DO: EXERCISE 3
@@ -43,9 +60,14 @@ namespace RLMAL
         /// agent       : the agent for which the action/slot machine is selected
         /// epsilon     : the random action selection parameter
         /// random      : this object can be used to generate random numbers
-        public static int egreedy(double epsilon, Agent agent , Random random)
+        public static int egreedy(double epsilon, Agent agent, Random random)
         {
-            return 0;
+            // There's a chance of epsilon to go to a random slot machine
+            if (random.NextDouble() > epsilon)
+                return random.Next(agent.getNrSlots);
+
+            // Else perform the same thing as during optimistic search
+            return optimistic(agent, random);
         }
 
         /// TO DO: EXERCISE 4
@@ -57,6 +79,31 @@ namespace RLMAL
         /// random      : this object can be used to generate random numbers
         public static int softmax(double tau, Agent agent, Random random)
         {
+            // Calculate the total reward (denominator of the Gibbs distribution)
+            double totalRewards = 0;
+            for (int i = 0; i < agent.getNrSlots; i++)
+                totalRewards += Math.Pow(Math.E, agent.getRewards[i] / tau);
+
+            // Calculate the chances per action to be chosen
+            double[] p = new double[agent.getNrSlots];
+            for (int i = 0; i < agent.getNrSlots; i++)
+                p[i] = Math.Pow(Math.E, agent.getRewards[i] / tau) / totalRewards;
+
+            // Get a random value from [0,1]
+            double x = random.NextDouble();
+
+            // The CDF of the values
+            double cummulative = 0;
+
+            // Once the value of x falls between the interval between the previous and the next value
+            //   thus choosing the next action
+            for (int i = 0; i < agent.getNrSlots; i++)
+            {
+                cummulative += p[i];
+                if (x < cummulative)
+                    return i;
+            }
+
             return 0;
         }
 
