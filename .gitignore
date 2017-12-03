@@ -6,3 +6,10 @@ RLMAL/.vs/*
 *.ide-shm
 *.ide
 *.exe
+*.aux
+docs/verslag.log
+*.out
+docs/verslag.pdf
+*.pdb
+RLMAL/RLMAL/bin/Debug/RLMAL.exe
+*.exe

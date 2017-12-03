@@ -22,6 +22,7 @@ namespace RLMAL
         /// reward_t    : the reward the agent received at tick t from the chosen slot machine
         public static double updateScore(Agent agent, double alpha, double reward_t)
         {
+            // return (agent.getRewards[agent.getMachineId] * (alpha-1) + reward_t) / alpha;
             return agent.getRewards[agent.getMachineId] * (1 - alpha) + reward_t * alpha;
         }
 

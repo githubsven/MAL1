@@ -19,6 +19,11 @@ namespace RLMAL
 {
     public partial class CasinoForm : Form
     {
+        int[] lasts = new int[3];
+        int stgCount = 0;
+
+
+
         #region GLOBAL VARS
         //Size of agent on screen
         int sizeA = 15;
@@ -192,6 +197,18 @@ namespace RLMAL
             // TODO: IMPLEMENT
             // Store the values in a .csv file to be used in statistical analysis
             // outputValues();
+            int diff = 0;
+            for(int i =0; i < 3; i++) {
+                diff += Math.Abs(lasts[i] - slotmachineList[i].getQueueCount);
+                if (lasts[i] != slotmachineList[i].getQueueCount)
+                    lasts[i] = slotmachineList[i].getQueueCount;
+            }
+            if (diff == 0)
+                stgCount++;
+            else
+                stgCount = 0;
+            if (stgCount == 50)
+                Console.WriteLine(tickCount);
 
 
 

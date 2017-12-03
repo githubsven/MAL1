@@ -17,17 +17,46 @@
 \begin{document}
 \maketitle
 
-\section*{Problem 1}
+\section*{Problem 1}\label{sec:p1}
 
 \begin{enumerate}
-	\item[a)]
-	% TODO: uitwerken
+	\item[a)] 						% TODO: uitwerken
+	There are a few advantages for using a learning parameter $\alpha$ instead of averaging the rewards.
+	The main advantage is that an agent will continue learning from any newly obtained value:
+	assume an $\alpha = 0.05$ then each new value will count for $0.05 = 5\%$ towards the new expected value, regardless of how many actions were completed.
+	When averaging the rewards the weights of new values will change, depending on their occurence.
+	The reward of each action after five rewards will count for $1/n = 1/5 = 20\%$.
+	In much later runs the weights per reward are different; old values have the same weight as newer values.
+	Table \ref{table:P1-rewardWeights} shows how much each reward weighs after a number of runs.
+	In a changing environment this advantage is much clearer:
+	having a learning parameter $\alpha$ is much more flexible than not having one.
 
+	We compared using a learning rate of $\alpha$ we found that the system converged much quicker than when averaging the rewards.
+	The comparison was done using the optimistic initial values algorithm.
+	The values used were:  nrAgents $= 10$, nrMachines $=3$ and initialValues $=5$.
+	The $\alpha$ parameter varied ($\alpha = 0.05, 0.1, 0.25, 0.75$ and $1$).
+
+	We ran the optimistic starting values algorithm five times per reward function.
+	This was done for at most $1000$ ticks or until the amount of agents per slot machine did not change for 50 ticks.
+	The amount of ticks before the algorithm stopped was noted and can be found in table \ref{table:P1-comparisson}.
+	We found that the averaging algorithm never converged during the tests.
+	When using a learning parameter it converged every time.
+
+	Using these tests we concluded that having a learning parameter $\alpha$ helps with the rate of convergeance.
+	Having a higher $\alpha$ results in faster converging strategies for the agents.
+
+	% SLides lecture 3, slide 172/174
 \end{enumerate}
 
 \section*{Problem 2}
 \begin{enumerate}
 	\item[a)]
+	$\alpha = 0.10$
+	nrAgents $= 10$, nrMachines $=3$ and initialValues $=5$
+	And the initial value varied (0,1,2,5,10)
+
+
+
 	\item[b)]
 \end{enumerate}
 
@@ -46,5 +75,47 @@
 \end{enumerate}
 
 \section*{Problem 5}
+
+
+
+
+\begin{table}[]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+Algorithm       & Test 1                   & Test 2 & Test 3 & Test 4 & Test 5 & Average  \\ \hline
+$\alpha = 0.05$ & $550$         & $365$    & $291$    & $351$    & $511$    & $413.6$ 		\\ \hline
+$\alpha = 0.10$ & $430$ 				& $191$    & $372$    & $549$    & $182$    & $344.8$ 		\\ \hline
+$\alpha = 0.25$ & $133$         & $62$     & $164$    & $178$    & $202$    & $147.8$ 		\\ \hline
+$\alpha = 0.75$ & $61$          & $73$     & $50$     & $25$     & $128$    & $67.4$      \\ \hline
+$\alpha = 1.00$ & $19$          & $21$     & $26$     & $101$    & $81$     & $49.6$      \\ \hline
+Averaging       & $1000$        & $1000$   & $1000$   & $1000$   & $1000$   & $1000$      \\ \hline
+\end{tabular}
+\caption{Ticks required till conversion per algorithm as described in \ref{sec:p1} }
+\label{table:P1-comparisson}
+\end{table}
+
+
+\begin{table}[]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+Initial Value & Test 1 & Test 2 & Test 3 & Test 4 & Test 5 & Average \\ \hline
+$0$       & $1$      & $1$      & $1$      & $1$      & $1$      & $1$       \\ \hline
+$1$       & $351$    & $120$    & $148$    & $413$    & $187$    & $243.8$   \\ \hline
+$2$       & $324$    & $316$    & $155$    & $504$    & $190$    & $297.8$   \\ \hline
+$5$       & $298$    & $302$    & $237$    & $315$    & $282$    & $286.8$   \\ \hline
+$10$      & $459$    & $246$    & $194$    & $359$    & $232$    & $298$     \\ \hline
+\end{tabular}
+\caption{The rate of convergeance with differing initial values}
+\label{my-label}
+\end{table}
+
+% Extra sources:
+\section{Sources}
+http://users.isr.ist.utl.pt/~mtjspaan/readingGroup/ProofQlearning.pdf
+
+
+
 
 \end{document}
