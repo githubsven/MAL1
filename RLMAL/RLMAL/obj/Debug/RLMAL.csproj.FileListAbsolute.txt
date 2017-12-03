@@ -23,7 +23,6 @@ C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\bin\Debug\OxyPlot.pdb
 C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\bin\Debug\OxyPlot.xml
 C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\bin\Debug\OxyPlot.WindowsForms.pdb
 C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\bin\Debug\OxyPlot.WindowsForms.xml
-C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\obj\Debug\RLMAL.csprojResolveAssemblyReference.cache
 C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\obj\Debug\RLMAL.CasinoForm.resources
 C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\obj\Debug\RLMAL.Properties.Resources.resources
 C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\obj\Debug\RLMAL.csproj.GenerateResource.Cache

@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.Axes;
+using System.IO;
 
 namespace RLMAL
 {
@@ -21,7 +22,8 @@ namespace RLMAL
     {
         int[] lasts = new int[3];
         int stgCount = 0;
-
+        int[] counts = new int[100];
+        int count = 0;
 
 
         #region GLOBAL VARS
@@ -71,7 +73,7 @@ namespace RLMAL
 
             //Disable timer
             this.TickTimer.Enabled = false;
-            this.TickTimer.Interval = 200;
+            this.TickTimer.Interval = 1;
 
             //Select egreedy as starting algorithm
             this.dropDownAlgorithm.SelectedIndex = 0;
@@ -191,26 +193,13 @@ namespace RLMAL
             chooseActions();
             //Calls updateScore for each agent after queues are formed
             updateActionReward();
+
             //Updates the actions plot
-            updatePlotActions();
+            // TODO: uncomment this
+            // updatePlotActions();
 
-            // TODO: IMPLEMENT
-            // Store the values in a .csv file to be used in statistical analysis
-            // outputValues();
-            int diff = 0;
-            for(int i =0; i < 3; i++) {
-                diff += Math.Abs(lasts[i] - slotmachineList[i].getQueueCount);
-                if (lasts[i] != slotmachineList[i].getQueueCount)
-                    lasts[i] = slotmachineList[i].getQueueCount;
-            }
-            if (diff == 0)
-                stgCount++;
-            else
-                stgCount = 0;
-            if (stgCount == 50)
-                Console.WriteLine(tickCount);
-
-
+            // Store the values in a .txt file to be used in statistical analysis
+            outputValues();
 
             //All slot machine queue counts are set to 0
             resetQueues();
@@ -220,8 +209,61 @@ namespace RLMAL
             this.ticksLabel.Text = string.Format("Ticks: {0}", tickCount);
 
             //Redraw casino
-            casino.Invalidate();
+            // TODO: uncomment this
+            // casino.Invalidate();
         }
+
+        public void outputValues()
+        {
+            int diff = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                diff += Math.Abs(lasts[i] - slotmachineList[i].getQueueCount);
+                if (lasts[i] != slotmachineList[i].getQueueCount)
+                    lasts[i] = slotmachineList[i].getQueueCount;
+            }
+            if (diff == 0)
+                stgCount++;
+            else
+                stgCount = 0;
+            if (stgCount >= 50)
+            {
+                counts[count] = tickCount;
+                count++;
+                dropDownAlgorithm_SelectedIndexChanged(this, null);
+
+                if (count == 100)            // Amount of tests
+                {
+                    string path = "./";
+                    switch (algIndex)
+                    {
+                        case 0:
+                            path += "egreedy";
+                            path += "-eps" + eps;
+                            break;
+                        case 1:
+                            path += "softmax";
+                            path += "-t" + t;
+                            break;
+                        case 2:
+                            path += "optimistic";
+                            path += "-a" + a;
+                            path += "-initVals" + initialValues.Value;
+                            break;
+
+                    }
+                    path += ".txt";
+
+                    var stw = new StreamWriter(path);
+                    for (int i = 0; i < 100; i++)
+                        stw.WriteLine("$" + counts[i] + "$");
+                    stw.Flush();
+                    stw.Dispose();
+                    Application.Exit();
+                }
+            }
+        }
+
 
         #region Action Selection
         public void chooseActions()
@@ -264,15 +306,15 @@ namespace RLMAL
 
             //Update queue for slot machine
             slotmachineList[machineIndex].getQueueCount++;
-            
+
             int queue = slotmachineList[machineIndex].getQueueCount;
 
             //Reward drawn from machine by agent
             //agent.getReward_t = slotmachineList[machineIndex].getReward();
 
             //Update position based on machinenr
-            agent.getPosX = (width / (nrMachine + 1) * (machineIndex+1)) - sizeM / 2 + sizeM/2-sizeA/2;
-            agent.getPosY = sizeM + queue*sizeA;
+            agent.getPosX = (width / (nrMachine + 1) * (machineIndex + 1)) - sizeM / 2 + sizeM / 2 - sizeA / 2;
+            agent.getPosY = sizeM + queue * sizeA;
         }
 
         public void updateActionReward()
@@ -381,7 +423,8 @@ namespace RLMAL
 
             for (int i = 0; i < nrMachine; i++)
             {
-                LineSeries line1 = new LineSeries {
+                LineSeries line1 = new LineSeries
+                {
                     Title = string.Format("Slot {0}", i),
                     StrokeThickness = 1
                 };
@@ -481,7 +524,7 @@ namespace RLMAL
         private void initialValues_Scroll(object sender, EventArgs e)
         {
             initvals = initialValues.Value;
-            initialValuesLabel.Text = string.Format("initial values = {0}",initvals);
+            initialValuesLabel.Text = string.Format("initial values = {0}", initvals);
         }
 
         private void speed_Scroll(object sender, EventArgs e)
