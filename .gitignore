@@ -1,6 +1,6 @@
 *.pdb
-RLMAL/RLMAL/bin/*
-RLMAL/RLMAL/obj/*
+./RLMAL/RLMAL/bin/*
+./RLMAL/RLMAL/obj/*
 *.exe
 RLMAL/.vs/*
 *.ide-shm
@@ -11,6 +11,7 @@ docs/verslag.log
 *.out
 docs/verslag.pdf
 *.pdb
-RLMAL/RLMAL/bin/Debug/RLMAL.exe
+RLMAL/RLMAL/bin/*
+*.exe
 *.exe
 *.exe

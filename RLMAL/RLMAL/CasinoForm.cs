@@ -195,11 +195,10 @@ namespace RLMAL
             updateActionReward();
 
             //Updates the actions plot
-            // TODO: uncomment this
-            // updatePlotActions();
+            updatePlotActions();
 
             // Store the values in a .txt file to be used in statistical analysis
-            outputValues();
+            // outputValues();
 
             //All slot machine queue counts are set to 0
             resetQueues();
@@ -209,8 +208,7 @@ namespace RLMAL
             this.ticksLabel.Text = string.Format("Ticks: {0}", tickCount);
 
             //Redraw casino
-            // TODO: uncomment this
-            // casino.Invalidate();
+            casino.Invalidate();
         }
 
         public void outputValues()
@@ -226,7 +224,7 @@ namespace RLMAL
                 stgCount++;
             else
                 stgCount = 0;
-            if (stgCount >= 50)
+            if (stgCount >= 50 || tickCount >= 1000)
             {
                 counts[count] = tickCount;
                 count++;
@@ -256,7 +254,7 @@ namespace RLMAL
 
                     var stw = new StreamWriter(path);
                     for (int i = 0; i < 100; i++)
-                        stw.WriteLine("$" + counts[i] + "$");
+                        stw.WriteLine((counts[i] - 50));
                     stw.Flush();
                     stw.Dispose();
                     Application.Exit();

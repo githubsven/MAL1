@@ -64,7 +64,7 @@ namespace RLMAL
         public static int egreedy(double epsilon, Agent agent, Random random)
         {
             // There's a chance of epsilon to go to a random slot machine
-            if (random.NextDouble() > epsilon)
+            if (random.NextDouble() < epsilon)
                 return random.Next(agent.getNrSlots);
 
             // Else perform the same thing as during optimistic search
@@ -85,14 +85,11 @@ namespace RLMAL
             double[] p = new double[agent.getNrSlots];  // Chances per action
 
             for (int i = 0; i < agent.getNrSlots; i++)
-            {
-                p[i] = Math.Pow(Math.E, agent.getRewards[i] / tau);
-                totalRewards += p[i];
-            }
+                totalRewards += Math.Pow(Math.E, agent.getRewards[i] / tau);
 
             // Calculate the chances per action to be chosen
             for (int i = 0; i < agent.getNrSlots; i++)
-                p[i] /= totalRewards;
+                p[i] = Math.Pow(Math.E, agent.getRewards[i] / tau) / totalRewards;
 
             // Get a random value from [0,1]
             double x = random.NextDouble();
