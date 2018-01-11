@@ -28,7 +28,7 @@ namespace RLMAL
         public Agent(int nrMachine, Random r, int initvals)
         {
             this.nrSlots = nrMachine;
-            rewardEstimates = new double[nrSlots];
+            rewardEstimates = new double[nrSlots * 2];
 
             //Need to initialise estimates high for optimistic values
             for (int i = 0; i < rewardEstimates.Length; i++)

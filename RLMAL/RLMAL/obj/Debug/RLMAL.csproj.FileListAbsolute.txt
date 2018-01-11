@@ -29,3 +29,4 @@ C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\obj\Debug\RLMAL.csproj.Genera
 C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\obj\Debug\RLMAL.csproj.CoreCompileInputs.cache
 C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\obj\Debug\RLMAL.exe
 C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\obj\Debug\RLMAL.pdb
+C:\Users\michiel\Documents\GitHub\MAL1\RLMAL\RLMAL\obj\Debug\RLMAL.csprojResolveAssemblyReference.cache

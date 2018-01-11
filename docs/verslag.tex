@@ -3,7 +3,11 @@
 \usepackage[affil-it]{authblk}
 \usepackage{etoolbox}
 \usepackage{lmodern}
+
 \usepackage{amsmath}            % Fancy Mathematical symbols
+\usepackage{hyperref}						% Hyperlinks
+\usepackage{graphicx}
+
 
 \makeatletter
 \patchcmd{\@maketitle}{\LARGE \@author}{\fontsize{12}{12}\selectfont\@author}{}{}
@@ -13,7 +17,7 @@
 
 \title{Practical 1 - Reinforcement Learning \\
 	\large Multi-agent learning 2017-2018}
-\author{-STUDENT NAMES AND IDS HERE-}
+\author{Sven Luehof ($4235991$) & Michiel van Heusden ($4173309$)}
 \date{\today}
 \begin{document}
 \maketitle
@@ -22,36 +26,50 @@
 
 \begin{enumerate}
 	\item[a)] 						% TODO: uitwerken
-	There are a few advantages for using a learning parameter $\alpha$ instead of averaging the rewards.
-	The main advantage is that an agent will continue learning from any newly obtained value:
-	assume an $\alpha = 0.05$ then each new value will count for $0.05 = 5\%$ towards the new expected value, regardless of how many actions were completed.
-	When averaging the rewards the weights of new values will change, depending on their occurence.
-	The reward of each action after five rewards will count for $1/n = 1/5 = 20\%$.
-	In much later runs the weights per reward are different; old values have the same weight as newer values.
-	Table \ref{table:P1-rewardWeights} shows how much each reward weighs after a number of runs.
-	In a changing environment this advantage is much clearer:
-	having a learning parameter $\alpha$ is much more flexible than not having one.
+	There are a few advantages for using a learning parameter $\alpha$ instead of averaging past rewards.
+	The main advantage is that the agent will continue learning from new rewards.
+	Assume an $\alpha = 0.05$, then each new value will count for $5\%$ towards the new believed value of the action.
+	As $\alpha$ never changes value, old values become less important, with a rate of $(1-\alpha)^{n}$.
 
-	We compared using a learning rate of $\alpha$ we found that the system converged much quicker than when averaging the rewards.
-	The comparison was done using the optimistic initial values algorithm.
-	The values used were:  nrAgents $= 10$, nrMachines $=3$ and initialValues $=5$.
-	The $\alpha$ parameter varied ($\alpha = 0.05, 0.1, 0.25, 0.75$ and $1$).
+	Another advantage can be seen in a system like the one provided for this practical:
+	the rate at which strategies converge is much higher with an $\alpha$ value compared to averaging reward values.
+	The system as provided, written by Maaike Burghorn and Wouter Something, was used to test how well this holds. %TODO
 
-	We ran the optimistic starting values algorithm five times per reward function.
-	This was done for at most $1000$ ticks or until the amount of agents per slot machine did not change for 50 ticks.
-	The amount of ticks before the algorithm stopped was noted and can be found in table \ref{table:P1-comparisson}.
-	We found that the averaging algorithm never converged during the tests.
-	When using a learning parameter it converged every time.
+	In order to do so a tests was dsigned:
+	the program that was used to model the system was the practical provided \footnote{\hyperref{}}. % TODO: download link
+	The algorithm used was the \emph{Optimistic Starting Value} algorithm, with the following parameters:
+	\begin{itemize}
+		\item nrAgents $=10$
+		\item nrMachines $=4$
+		\item initialValues $=5$
+	\end{itemize}
+	Whereas the $a$ parameter varied ($\alpha = 0.05$, $0.10$, $0.25$, $0.50$, $0.75$, $1.00$).
+	A separate test was run without a learning parameter, but with averaging the rewards.
 
-	Using these tests we concluded that having a learning parameter $\alpha$ helps with the rate of convergeance.
-	Having a higher $\alpha$ results in faster converging strategies for the agents.
+	This setup was used to determine after how many \emph{ticks} (actions) the distribution of agents per machine converged.
+	The reason this was chosen to indicate the rate of convergence of the expected reward values is because agents choose the optimal value when using the optimistic starting value algorithm.
+	Whenever the amount of agents that are on a certain machine does not change, one could assume that a strategy, and thus the expected rewards, had converged.
 
+	We found that with a learning parameter the system converged within a few hundred ticks.
+	The average convergence rates and their standard deviations can be found in table \ref{table:Ex1-TestSummaries}.
+	Unfortunately there never was true convergence when running the averaging algorithm; we had to implement an upper limit of ticks.
+	We also found that having a higher $\alpha$ was correlated to a faster convergence as can be seen in figure \ref{fig:box-plots-alphavalues}.
+	The complete test data can be found in the additional files, which will be provided upon request\footnote{Send an email to \href{mailto:m.p.a.vanheusden@uu.nl}{m.p.a.vanheusden@uu.nl}}.
 
-% De tests:
-a = 0.05, 0.1,0.25, 0.5 ,0.75, 1.0
-nrA = 10
-nrM = 3
-initVals = 5
+	A third, and more important advantage to using a learning parameter over averaging rewards can be seen in a non-static environment.
+	% TODO: uitwerken
+
+	\begin{table}[]
+	\begin{tabular}{l|lllllll}
+	Algorithm & $\alpha = 0.05$ & $\alpha = 0.10$ & $\alpha = 0.25$ & $\alpha = 0.50$ & $\alpha = 0.75$ & $\alpha = 1.00$ & Averaging   \\
+	\hline
+	          & $546.5$     & $312.7$     & $144.2$     & $102.5$     & $78.20$     & $53.50$     & $69.93$       \\
+	          & $154.1$     & $86.34$     & $55.65$     & $23.18$     & $35.51$     & $35.12$     & $69.98$
+	\end{tabular}
+	    \caption{The amount of ticks required until the system converged; parameters: nrAgents $=10$, nrMachines $=3$, initialValues $=5$.}
+	    \label{table:Ex1-TestSummaries}
+	\end{table}
+
 
 	% SLides lecture 3, slide 172/174
 \end{enumerate}
@@ -65,6 +83,57 @@ initVals = 5
 
 	The complete test data can be found in the added files.
 
+	Optimistic starting values is a greedy search algorithm, therefore we can assume that it eventually converges to a strategy.
+	This is because each agent will assign its own expected value to each of the slot machines.
+	This value will eventually converge, as shown in exercise $1$.
+	Therefore a strategy is bound to converge, as each agent chooses its own optimal machine.
+
+	We, however, do assume that the starting values will have some impact.
+	Whenever the starting values are $0$ each agent will pick a single machine and assign a value to it.
+	Since the expected rewards of the other machines is $0$, the first selected one will always be the one with the highest reward (assuming no negative values will be rewarded).
+	If the starting value is higher than the true lowest expected value, the action distribution will always converge as well.
+	This is due to the fact that the expected payoff value of each machine converges as well.
+
+	Why? Since the initial value is the same a random machine will be chosen.
+	If the chosen machine is the one with the lowest true expected value, it will eventually no longer be the optimal machine to play.
+	If the first machine chosen was not the one with the lowest true expected value, the agent will assign a higher value to that machine than to the other machines.
+	This results in a convergence in strategy for the agent.
+	If the initial values is higher than the highest true expected value of all machines, this results in each machine being tested for their values.
+	The algorithm will choose one random, assign a value lower than the initial value to it.
+	This process is then repeated until the expected values of the machines converge and an optimal strategy emerges.
+
+	However, the more expected values that have to converge, the longer it takes to converge.
+	Therefore one can assume that a lower initial value corresponds with a shorter time before the system converges.
+
+	In order to prove this a test environment similar to the one used for exercise 1 was created.
+	The program, as provided, was used again.
+	Once again the optimistic starting value algorithm was used for the tests.
+	The constant settings were as follows:
+		\begin{itemize}
+		\item nrAgents $=10$
+		\item nrMachines $=4$
+		\item $\alpha = 0.10$
+	\end{itemize}
+	The initial values were varied (initial values = $0$, $1$, $2$, $5$, $10$).
+	Once again the test was conducted $100$ times per initial value.
+
+	The results were as expected: on average the tests with a lower initial value converged faster than the ones with a higher average value.
+	This can be seen in \ref{table:Ex2-TestSummaries}.
+	However, for starting values higher than $1$ the difference is not that significant, as can be derived from figure \ref{fig:Boxplot-InitialValues}.
+	The full test data will be given on request \footnote{Send an email to \href{mailto:m.p.a.vanheusden@uu.nl}{m.p.a.vanheusden@uu.nl}}.
+
+
+	\begin{table}[]
+    \centering
+	\begin{tabular}{l|lllll}
+	    Initial Values     & $0$ 		& $1$ 	& $2$ 		& $5$ 		& $10$ \\
+	    \hline
+	    Mean               & $2.150$	& $250.7$	& $271.1$   & $293.7$   & $316.1$         \\
+	    Standard Deviation & $0.592$	& $87.55$	& $91.43$   & $80.87$   & $90.99$
+	\end{tabular}
+	\caption{The amount of ticks required until the system converged; parameters: nrAgents $=10$, nrMachines $=3$, $\alpha = 0.10$.}
+	\label{table:Ex2-TestSummaries}
+	\end{table}
 
 
 
@@ -76,171 +145,46 @@ initVals = 5
 \begin{enumerate}
 	\item[a)]
 
+	To test whether this algorithm converges the action distribution we ran the algorithm with parameters: $\alpha = 0.10$,
+	nrAgents $= 10$, nrMachines $=3$, initialValues $=5$,
+	and the $\epsilon$ varied ($0$,$1$,$2$,$5$,$10$).
 
-	$\alpha = 0.10$
-	nrAgents $= 10$, nrMachines $=3$ and initialValues $=5$
-	And the $\epsilon$ varied ($0$,$1$,$2$,$5$,$10$)
+	After running the algorithm it became apparent that the action distribution converges to a certain slot machine. After executing the $\epsilon$-greedy algorithm for a while, the agents will most often choose the slot machine which results in the highest expected reward. However, the agents will still try other slot machines with probability epsilon, since the algorithm does not diminish the epsilon value.
+
+    The algorithm converges the action distribution, because if performed for an infinite amount of time, all agents will have tried every slot machine and all expected rewards will have converged towards their true reward. It will then decide to use the slot machine with the highest expected reward, because of the algorithm`s greedy property. However, as said before with probability epsilon agents will still sometimes diverge from the optimal slot machine.
+
+    The $\epsilon$ parameter influences the `willingness to explore` of the agents. If the $\epsilon$ parameter is high, the agents will decide to try a different slot machine than the optimal slot machine more often. When epsilon is low, the agents will choose the current optimal slot machine more often.
+
 
 	\item[b)]
+
+	The disadvantage of a high exploration rate is that the agent will often choose a slot machine with a lower than optimal expected reward. This may result in the finding of a better than previous optimal slot machine, but may also result in a lower achieved reward than if the agent had chosen the optimal slot machine.
+
+    A possible solution for this problem is through diminishing the exploration rate as the algorithm goes through its cycles. At the start of the run you want the agents to have a relatively high exploration rate, to enable them to find the optimal slot machine. However, after it has become likely that they have already found the optimal slot machine, you want to decrease the exploration rate, such that they will choose the optimal slot machine more often. It might even be useful to eventually let the exploration rate become 0, so that the agents from that moment will only choose the slot machine resulting in the highest reward.
+
 \end{enumerate}
 
 \section*{Problem 4}
 
 \begin{enumerate}
-	\item[a)]
+	\item[a)]For the softmax algorithm we used parameters $\alpha = 0.10$,
+	nrAgents $= 10$, nrMachines $=3$ and the $\tau$ took values of ($0.05$, $0.1$,$0.2$,$0.5$,$1$).
+
+	We notice that the action distribution barely converges. Using a low value for $\tau$ yielded results showing a pattern that suggests convergences, namely after a while the agents seemed to mostly go for a single slot machine, very seldom diverging from this strategy. However, as $\tau$ increases, the convergence of the action distribution seems to disappear - the amount of agents choosing a single slot machine decreases.
+
+	This effect occurs because $\tau$ influences how much the expected reward influences the probability that a certain action is chosen. A high $\tau$ value means that the expected reward has barely no effect on the probability. This principle also applies the other way around, if the $\tau$ is low, the expected reward has more impact on the probability.
+
 	\item[b)]
+	Softmax exploit opties met een hoge expected reward meer (wanneer het besluit te searchen. epsilon greedy gaat random exploren.
 \end{enumerate}
 
 \section*{Problem 5}
 
 
 
-
-\begin{table}[]
-\centering
-\begin{tabular}{|l|l|l|l|l|l|l|}
-\hline
-Algorithm       & Test 1                   & Test 2 & Test 3 & Test 4 & Test 5 & Average  \\ \hline
-$\alpha = 0.05$ & $550$         & $365$    & $291$    & $351$    & $511$    & $413.6$ 		\\ \hline
-$\alpha = 0.10$ & $430$ 				& $191$    & $372$    & $549$    & $182$    & $344.8$ 		\\ \hline
-$\alpha = 0.25$ & $133$         & $62$     & $164$    & $178$    & $202$    & $147.8$ 		\\ \hline
-$\alpha = 0.75$ & $61$          & $73$     & $50$     & $25$     & $128$    & $67.4$      \\ \hline
-$\alpha = 1.00$ & $19$          & $21$     & $26$     & $101$    & $81$     & $49.6$      \\ \hline
-Averaging       & $1000$        & $1000$   & $1000$   & $1000$   & $1000$   & $1000$      \\ \hline
-\end{tabular}
-\caption{Ticks required till conversion per algorithm as described in \ref{sec:p1} }
-\label{table:P1-comparisson}
-\end{table}
-
-
-\begin{table}[]
-\centering
-\begin{tabular}{|l|l|l|l|l|l|l|}
-\hline
-Initial Value & Test 1 & Test 2 & Test 3 & Test 4 & Test 5 & Average \\ \hline
-$0$       & $1$      & $1$      & $1$      & $1$      & $1$      & $1$       \\ \hline
-$1$       & $351$    & $120$    & $148$    & $413$    & $187$    & $243.8$   \\ \hline
-$2$       & $324$    & $316$    & $155$    & $504$    & $190$    & $297.8$   \\ \hline
-$5$       & $298$    & $302$    & $237$    & $315$    & $282$    & $286.8$   \\ \hline
-$10$      & $459$    & $246$    & $194$    & $359$    & $232$    & $298$     \\ \hline
-\end{tabular}
-\caption{The rate of convergeance with differing initial values}
-\label{my-label}
-\end{table}
-
 % Extra sources:
 \section{Sources}
 http://users.isr.ist.utl.pt/~mtjspaan/readingGroup/ProofQlearning.pdf
 
-2a:
-\begin{table}[]
-\centering
-\begin{tabular}{|l|l|l|l|l|l|}
-\hline
-Initial Values: & $0$ & $1$   & $2$   & $5$   & $10$  \\ \hline
-                & $2$ & $153$ & $199$ & $273$ & $207$ \\
-                & $2$ & $255$ & $252$ & $216$ & $372$ \\
-                & $2$ & $214$ & $137$ & $332$ & $291$ \\
-                & $2$ & $340$ & $321$ & $481$ & $395$ \\
-                & $2$ & $184$ & $274$ & $205$ & $315$ \\
-                & $2$ & $221$ & $-48$ & $336$ & $299$ \\
-                & $2$ & $319$ & $286$ & $255$ & $325$ \\
-                & $2$ & $95$  & $501$ & $294$ & $313$ \\
-                & $2$ & $-48$ & $339$ & $187$ & $446$ \\
-                & $2$ & $268$ & $295$ & $173$ & $-48$ \\
-                & $2$ & $240$ & $131$ & $227$ & $484$ \\
-                & $2$ & $-48$ & $265$ & $448$ & $353$ \\
-                & $2$ & $170$ & $245$ & $321$ & $171$ \\
-                & $2$ & $244$ & $173$ & $316$ & $-48$ \\
-                & $2$ & $170$ & $223$ & $316$ & $383$ \\
-                & $2$ & $593$ & $167$ & $250$ & $369$ \\
-                & $2$ & $243$ & $437$ & $344$ & $172$ \\
-                & $2$ & $251$ & $207$ & $267$ & $371$ \\
-                & $2$ & $166$ & $416$ & $300$ & $408$ \\
-                & $2$ & $375$ & $296$ & $272$ & $329$ \\
-                & $2$ & $314$ & $195$ & $368$ & $224$ \\
-                & $2$ & $202$ & $147$ & $420$ & $299$ \\
-                & $2$ & $194$ & $199$ & $243$ & $180$ \\
-                & $2$ & $296$ & $244$ & $267$ & $308$ \\
-                & $2$ & $219$ & $346$ & $448$ & $245$ \\
-                & $2$ & $192$ & $-48$ & $223$ & $525$ \\
-                & $2$ & $245$ & $243$ & $297$ & $318$ \\
-                & $2$ & $103$ & $210$ & $246$ & $370$ \\
-                & $2$ & $388$ & $282$ & $292$ & $316$ \\
-                & $2$ & $224$ & $293$ & $421$ & $253$ \\
-                & $2$ & $301$ & $548$ & $298$ & $221$ \\
-                & $2$ & $344$ & $246$ & $-48$ & $320$ \\
-                & $2$ & $219$ & $153$ & $-48$ & $242$ \\
-                & $2$ & $343$ & $261$ & $188$ & $371$ \\
-                & $4$ & $133$ & $348$ & $415$ & $251$ \\
-                & $2$ & $235$ & $289$ & $131$ & $293$ \\
-                & $2$ & $320$ & $276$ & $270$ & $271$ \\
-                & $0$ & $180$ & $394$ & $238$ & $303$ \\
-                & $2$ & $144$ & $394$ & $202$ & $337$ \\
-                & $2$ & $245$ & $272$ & $249$ & $374$ \\
-                & $2$ & $-48$ & $248$ & $169$ & $362$ \\
-                & $3$ & $410$ & $466$ & $447$ & $224$ \\
-                & $2$ & $301$ & $125$ & $-48$ & $226$ \\
-                & $2$ & $174$ & $242$ & $363$ & $271$ \\
-                & $2$ & $218$ & $375$ & $245$ & $370$ \\
-                & $2$ & $222$ & $295$ & $225$ & $-48$ \\
-                & $6$ & $146$ & $245$ & $291$ & $316$ \\
-                & $2$ & $204$ & $442$ & $373$ & $395$ \\
-                & $2$ & $245$ & $248$ & $227$ & $252$ \\
-                & $2$ & $317$ & $231$ & $316$ & $337$ \\
-                & $2$ & $392$ & $219$ & $321$ & $348$ \\
-                & $2$ & $223$ & $290$ & $369$ & $295$ \\
-                & $2$ & $250$ & $149$ & $225$ & $373$ \\
-                & $2$ & $194$ & $370$ & $173$ & $274$ \\
-                & $2$ & $349$ & $121$ & $268$ & $329$ \\
-                & $2$ & $320$ & $242$ & $367$ & $382$ \\
-                & $2$ & $176$ & $132$ & $245$ & $246$ \\
-                & $2$ & $290$ & $281$ & $298$ & $348$ \\
-                & $3$ & $128$ & $248$ & $271$ & $275$ \\
-                & $2$ & $363$ & $228$ & $224$ & $300$ \\
-                & $2$ & $291$ & $-48$ & $223$ & $236$ \\
-                & $3$ & $252$ & $394$ & $192$ & $324$ \\
-                & $2$ & $269$ & $318$ & $370$ & $245$ \\
-                & $2$ & $250$ & $240$ & $270$ & $-48$ \\
-                & $2$ & $269$ & $279$ & $-48$ & $218$ \\
-                & $2$ & $252$ & $250$ & $-48$ & $149$ \\
-                & $2$ & $-48$ & $241$ & $263$ & $319$ \\
-                & $3$ & $168$ & $299$ & $420$ & $322$ \\
-                & $2$ & $180$ & $245$ & $227$ & $245$ \\
-                & $3$ & $178$ & $201$ & $440$ & $397$ \\
-                & $2$ & $240$ & $243$ & $267$ & $293$ \\
-                & $2$ & $333$ & $172$ & $351$ & $250$ \\
-                & $2$ & $322$ & $368$ & $204$ & $294$ \\
-                & $3$ & $395$ & $152$ & $366$ & $371$ \\
-                & $2$ & $567$ & $244$ & $223$ & $246$ \\
-                & $2$ & $273$ & $244$ & $-48$ & $444$ \\
-                & $3$ & $271$ & $278$ & $400$ & $258$ \\
-                & $2$ & $370$ & $390$ & $331$ & $406$ \\
-                & $2$ & $170$ & $144$ & $228$ & $424$ \\
-                & $2$ & $153$ & $500$ & $271$ & $271$ \\
-                & $4$ & $290$ & $271$ & $289$ & $250$ \\
-                & $2$ & $150$ & $224$ & $225$ & $238$ \\
-                & $3$ & $-48$ & $195$ & $270$ & $252$ \\
-                & $2$ & $265$ & $290$ & $368$ & $296$ \\
-                & $2$ & $143$ & $227$ & $277$ & $397$ \\
-                & $2$ & $146$ & $439$ & $315$ & $293$ \\
-                & $2$ & $242$ & $226$ & $274$ & $395$ \\
-                & $2$ & $183$ & $264$ & $521$ & $228$ \\
-                & $2$ & $148$ & $187$ & $243$ & $168$ \\
-                & $2$ & $369$ & $438$ & $227$ & $190$ \\
-                & $2$ & $269$ & $322$ & $319$ & $367$ \\
-                & $3$ & $248$ & $245$ & $519$ & $351$ \\
-                & $2$ & $298$ & $373$ & $265$ & $267$ \\
-                & $2$ & $247$ & $171$ & $252$ & $518$ \\
-                & $2$ & $221$ & $392$ & $312$ & $266$ \\
-                & $2$ & $149$ & $249$ & $205$ & $274$ \\
-                & $2$ & $245$ & $271$ & $318$ & $308$ \\
-                & $2$ & $294$ & $198$ & $372$ & $799$ \\
-                & $2$ & $-48$ & $149$ & $-48$ & $413$ \\
-                & $2$ & $192$ & $265$ & $249$ & $412$
-\end{tabular}
-\caption{My caption}
-\label{Complete test results per  starting values; \alpha = 0.10, nrAgents =10, nrMachines = 3}
-\end{table}
 
 \end{document}

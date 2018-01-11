@@ -208,7 +208,7 @@ namespace RLMAL
             this.ticksLabel.Text = string.Format("Ticks: {0}", tickCount);
 
             //Redraw casino
-            casino.Invalidate();
+            //casino.Invalidate();
         }
 
         public void outputValues()
@@ -244,7 +244,7 @@ namespace RLMAL
                             path += "-t" + t;
                             break;
                         case 2:
-                            path += "optimistic";
+                            path += "average"; // TODO
                             path += "-a" + a;
                             path += "-initVals" + initialValues.Value;
                             break;
